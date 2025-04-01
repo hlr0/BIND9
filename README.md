@@ -466,3 +466,73 @@ To check logs
 ```
 Tail –f /var/log/mylogs/mylog.log
 ```
+
+
+# Add an A record and test
+To add a new record, you will modify both of the zone files, then restart named.
+```
+vi /var/named/home.lab.db
+```
+```
+Add these lines:
+esxi2     IN  A       192.168.3.4
+esxi1     IN  A       192.168.3.5
+```
+```
+vi /var/named/192.168.3.db
+```
+```
+Add these lines:
+5      IN  PTR     esxi1.home.lab.
+4      IN  PTR     esxi2.home.lab.
+```
+Then restart named:
+```
+sudo systemctl restart named #or old systemV method
+```
+
+
+# Testing
+Testing is just as easy. After you can test locally, I would test from various other machines to make sure it responds to all queries. If it fails, check firewall rules, check allowed subnets, reachability, routes, etc.
+
+Test forward lookup:
+```
+dig esxi1.home.lab +short
+```
+Test reverse lookup:
+```
+dig -x 192.168.3.5 +short
+```
+
+# Optional: Fix Forwarding
+If you’re running into an issue where you can only resolve local domains, but not public domains like google.com, then you might try the following steps to see if it resolves your issue.
+```
+vi /etc/named.conf
+```
+Add your extra DNS servers here, or public servers like google.com:
+```
+        forwarders {
+                8.8.8.8;
+                x.x.x.x;
+        };
+        forward only;
+```
+Also modify the dnssec lines below:
+```
+        dnssec-enable no;
+        dnssec-validation no;
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
