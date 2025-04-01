@@ -199,6 +199,7 @@ $TTL 604800
 50             IN               PTR            win7pc.home.lab.
 ```
 Save it and exit
+The IP address in this example is 192.168.1.5 or 50. The reverse lookup zone uses the first 3 octets in reverse order: 1.168.192.in-addr.arpa. Using the last octet of the the IP address (5 or 50) in the zone file for the PTR record allows reverse lookups to take place
 \
 Now when you are done with your zone file you have to check it whether it is working correctly or not by entering the command below for forward zone file
 \
