@@ -379,45 +379,56 @@ nslooup gateway
 
 # LINUX CLIENTS
 
-Code:
+```
 sudo nano /etc/network/interfaces
+```
 type the following lines
-Code:
+```
 auto eth0
 iface eth0 inet dhcp
+```
 Now restart Network Deamons
-Code:
+```
 Sudo /etc/init.d/networking restart
+```
 to force client renew IP command
-Code:
+```
 sudo dhclient -r
+```
 Now obtain fresh IP:
-Code:
+```
 sudo dhclient
+```
 If you are running DHCP server on your system then enter the domain name and name server in dhcpd.conf file for example I have DNS server named nefitari.home.lab and IP address is 192.168.1.5 like as under
-
-Code:
+```
 option domain-name “nefitari.home.lab”;
 option domain-name-server  192.168.1.5;
-How to enable query logging in BIND
-To enable query logging execute rndc querylog command:
-Code:
+```
+# How to enable query logging in BIND
+## To enable query logging execute rndc querylog command:
+```
 Sudo rndc querylog
+```
 Check out query logging status by executing command:
-Code:
+```
 Sudo rndc status
+```
 Now you can view queries:
-Code:
+```
 tail -f /var/log/syslog
+```
 To disable it execute command again.
-Code:
+```
 Sudo rndc querylog
-Our own Query Logging in BIND
+```
+# Our own Query Logging in BIND
 
-Code:
+```
 Sudo nano /etc/bind/named.conf.local
+```
 Add the following lines at the bottom of the file. You can use any channel to produce log file. You can use more than one channel as well.
-Code:
+
+```
 logging {
     channel mylog_default {
         file "/var/log/mylogs/mylog.log" versions 3 size 12m;
@@ -426,24 +437,32 @@ logging {
     };
 category default { mylog_default; };
 };
+```
 After saving the file go to /var/log/ and make a mylogs folder and give it bind permission so that bind can write to it.
-Code:
+```
 Sudo mkdir /var/log/mylogs
-Code:
+```
+```
 sudo chown bind:bind /var/log/mylogs
+```
 Now after this you can make file mylog.log by using sudo nano mylog.log and save it in the directory mylogs or when you edit Apparmor it create the file automatically after restarting the bind, But at this time when you restart the bind it will not start and show fail. Because before named daemon can write to the new log file the AppArmor profile must be updated. First, edit
-Code:
+```
 Sudo nano /etc/apparmor.d/usr.sbin.named
+```
 And add:
-Code:
+```
 /var/log/mylogs/mylog.log w,
+```
 Next, reload the profile:
-Code:
+```
 sudo cat /etc/apparmor.d/usr.sbin.named | sudo apparmor_parser -r
-It may give you some warnings
+```
+It may give you some warnings\
 Now restart bind
-Code:
+```
 Sudo /etc/init.d/bind9 restart
+```
 To check logs
-Code:
+```
 Tail –f /var/log/mylogs/mylog.log
+```
